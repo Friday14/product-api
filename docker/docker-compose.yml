@@ -1,0 +1,33 @@
+version: '2'
+services:
+  web:
+    image: 'nginx:alpine'
+    container_name: product-web
+    depends_on:
+      - php-fpm
+    volumes:
+      - './nginx/:/etc/nginx/conf.d'
+      - '../:/var/www'
+    ports:
+      - '8883:80'
+  php-fpm:
+    build: ./php-fpm
+    container_name: product-fpm
+    depends_on:
+      - db
+    volumes:
+      - '../:/var/www:cached'
+  db:
+    image: 'postgres:10-alpine'
+    container_name: product-db
+    volumes:
+      - 'db:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: product_db
+    ports:
+      - '54328:5432'
+volumes:
+  db:
+    driver: local
