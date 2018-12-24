@@ -8,7 +8,7 @@ use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
 use Illuminate\Http\Request;
 
-class ProductsController extends Controller
+class ProductController extends Controller
 {
     public function __construct()
     {
@@ -27,6 +27,9 @@ class ProductsController extends Controller
         $product->name = $request->input('name');
         $product->description = $request->input('description');
         $product->price = $request->input('price');
+        if ($request->has('category_id')) {
+            $product->categories()->attach($request->input('category_id'));
+        }
         $product->save();
 
         return response()->json(['message' => 'Product created', 'data' => new ProductResource($product)]);
@@ -44,18 +47,6 @@ class ProductsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param ProductUpdateRequest $request
-     * @param Product $product
-     * @return void
-     */
-    public function edit(ProductUpdateRequest $request, Product $product)
-    {
-
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param ProductUpdateRequest $request
@@ -66,10 +57,13 @@ class ProductsController extends Controller
     {
         $product->name = $request->input('name', $product->name);
         $product->price = $request->input('price', $product->price);
-        $product->description = $request->input('name', $product->description);
+        $product->description = $request->input('description', $product->description);
+        if ($request->has('category_id')) {
+            $product->categories()->attach($request->input('category_id'));
+        }
         $product->save();
 
-        return response()->json(['message' => 'Product']);
+        return response()->json(['message' => 'Product updated', 'data' => new ProductResource($product)]);
     }
 
     /**
@@ -83,7 +77,7 @@ class ProductsController extends Controller
         try {
             $product->delete();
 
-            return response()->json(['message' => 'Category deleted']);
+            return response()->json(['message' => 'Product deleted']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'You do not have access'], 400);
         }

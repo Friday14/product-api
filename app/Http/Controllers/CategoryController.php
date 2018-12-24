@@ -8,10 +8,11 @@ use App\Http\Requests\CategoryUpdateRequest;
 use App\Http\Resources\CategoryCollection;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 
-class CategoriesController extends Controller
+class CategoryController extends Controller
 {
     public function __construct()
     {
@@ -66,11 +67,15 @@ class CategoriesController extends Controller
      */
     public function update(CategoryUpdateRequest $request, Category $category)
     {
-        $category->name = $request->input('name', $category->name);
-        $category->description = $request->input('description', $category->description);
-        $category->save();
+        try {
+            $category->name = $request->input('name', $category->name);
+            $category->description = $request->input('description', $category->description);
+            $category->save();
 
-        return response()->json(['message' => 'Category updated', 'data' => new CategoryResource($category)]);
+            return response()->json(['message' => 'Category updated', 'data' => new CategoryResource($category)]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
     }
 
     /**

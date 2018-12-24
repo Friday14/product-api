@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Handler extends ExceptionHandler
@@ -62,6 +63,13 @@ class Handler extends ExceptionHandler
             if ($exception->getMessage() === 'Token not provided') {
                 return response()->json(['error' => 'Token not provided']);
             }
+        }
+
+        if ($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+            $modelStack = explode('\\', $exception->getModel());
+            $modelName = array_pop($modelStack);
+
+            return response()->json(['error' => ucfirst($modelName) . ' not found']);
         }
 
         return parent::render($request, $exception);

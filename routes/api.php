@@ -24,5 +24,5 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
     Route::post('me', 'SessionController@me');
 });
 
-Route::resource('categories', 'CategoriesController')->except(['create', 'edit']);
-Route::resource('products', 'ProductsController')->except(['index', 'create', 'edit']);
+Route::resource('categories', 'CategoryController')->except(['create', 'edit']);
+Route::resource('products', 'ProductController')->except(['index', 'create', 'edit']);

@@ -24,8 +24,10 @@ class ProductCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|min:3|max:15',
-            'description' => 'string|min:3|max:100'
+            'name' => 'required|string|min:3|max:15',
+            'description' => 'required|string|min:3|max:100',
+            'price' => 'required|integer|min:1|max:200',
+            'category_id' => 'integer|exists:categories,id'
         ];
     }
 }
